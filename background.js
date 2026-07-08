@@ -1,10 +1,11 @@
-// Default Thresholds (in milliseconds)
+// Carnival Time Thresholds (in milliseconds)
 const THRESHOLDS = {
   FRESH: 0,
-  INFECTION: 2 * 60 * 1000,       // 2 minutes
-  DECAY: 30 * 60 * 1000,          // 30 minutes
-  ROTTEN: 3 * 60 * 60 * 1000,     // 3 hours
-  DEAD: 24 * 60 * 60 * 1000       // 1 day
+  ONE_DAY: 1 * 24 * 60 * 60 * 1000,     // 1 day
+  THREE_DAYS: 3 * 24 * 60 * 60 * 1000,   // 3 days
+  ONE_WEEK: 7 * 24 * 60 * 60 * 1000,    // 1 week
+  TWO_WEEKS: 14 * 24 * 60 * 60 * 1000,  // 2 weeks
+  ONE_MONTH: 30 * 24 * 60 * 60 * 1000   // 1 month+
 };
 
 // Initialize or update tab timestamp
@@ -17,19 +18,17 @@ function updateTabTimestamp(tabId) {
   });
 }
 
-// Calculate state based on elapsed time
+// Calculate precise decay state based on Carnival graphic
 function getState(elapsed) {
-  if (elapsed >= THRESHOLDS.DEAD) return 'ROTTEN';
-  if (elapsed >= THRESHOLDS.ROTTEN) return 'DECAY';
-  if (elapsed >= THRESHOLDS.DECAY) return 'INFECTION';
+  if (elapsed >= THRESHOLDS.ONE_MONTH) return 'MONTH_PLUS';
+  if (elapsed >= THRESHOLDS.TWO_WEEKS) return 'TWO_WEEKS';
+  if (elapsed >= THRESHOLDS.ONE_WEEK) return 'ONE_WEEK';
+  if (elapsed >= THRESHOLDS.THREE_DAYS) return 'THREE_DAYS';
+  if (elapsed >= THRESHOLDS.ONE_DAY) return 'ONE_DAY';
   return 'FRESH';
 }
 
 // Periodically check tabs and update their states
-/*
-  Note: In a real production environment, you would use canvas-generated data URLs 
-  or path strings to actual icons (e.g., '🟢', '🟡', '🟠', '🟤', '🤢') instead of text emojis.
-*/
 function checkTabAges() {
   chrome.tabs.query({}, (tabs) => {
     chrome.storage.local.get(['tabData'], (result) => {
@@ -39,7 +38,7 @@ function checkTabAges() {
       tabs.forEach((tab) => {
         if (!tab.id || !tab.url || tab.url.startsWith('chrome://')) return;
 
-        // If it's the currently active tab, it stays fresh
+        // Active tab stays fresh
         if (tab.active) {
           if (!tabData[tab.id]) updateTabTimestamp(tab.id);
           return;
@@ -53,7 +52,6 @@ function checkTabAges() {
           data.state = newState;
           tabData[tab.id] = data;
           
-          // Send message to content script to change favicon
           chrome.tabs.sendMessage(tab.id, { action: "updateState", state: newState }).catch(() => {});
         }
       });
@@ -62,7 +60,7 @@ function checkTabAges() {
   });
 }
 
-// Listen for tab updates, creation, or activation
+// Listeners
 chrome.tabs.onCreated.addListener((tab) => updateTabTimestamp(tab.id));
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') updateTabTimestamp(tabId);
@@ -73,13 +71,12 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   chrome.storage.local.get(['tabData'], (result) => {
     let tabData = result.tabData || {};
     if (tabData[tabId] && tabData[tabId].state !== 'FRESH') {
-      // Trigger recovery animation
       tabData[tabId].state = 'RECOVER';
       chrome.storage.local.set({ tabData });
 
       chrome.tabs.sendMessage(tabId, { action: "updateState", state: "RECOVER" }).catch(() => {});
 
-      // After 5 seconds, reset back to fresh
+      // 5-second glowing restoration sequence
       setTimeout(() => {
         updateTabTimestamp(tabId);
         chrome.tabs.sendMessage(tabId, { action: "updateState", state: "FRESH" }).catch(() => {});
@@ -90,5 +87,5 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   });
 });
 
-// Run check every 30 seconds
-setInterval(checkTabAges, 30000);
+// Checks every 5 minutes to keep browser lightweight
+setInterval(checkTabAges, 5 * 60 * 1000);

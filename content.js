@@ -1,13 +1,14 @@
 const STATE_EMOJIS = {
-  FRESH: "🌱",
-  INFECTION: "🍂",
-  DECAY: "🍁",
-  ROTTEN: "🍄",
-  RECOVER: "✨"
+  FRESH: "🌱",       // Just opened
+  ONE_DAY: "📄",     // 1 Day (Fading)
+  THREE_DAYS: "📜",  // 3 Days (Grainy/Scroll)
+  ONE_WEEK: "🗺️",    // 1 Week (Cracked / Ancient Map)
+  TWO_WEEKS: "🪵",   // 2 Weeks (Deeply decayed)
+  MONTH_PLUS: "🪦",  // 1 Month+ (Ancient history)
+  RECOVER: "✨"      // Click to restore sparkling visual
 };
 
 function changeFavicon(emoji) {
-  // Create a data URL from an emoji using a canvas element
   const canvas = document.createElement('canvas');
   canvas.height = 64;
   canvas.width = 64;
@@ -16,7 +17,6 @@ function changeFavicon(emoji) {
   ctx.fillText(emoji, 0, 54);
   const dataUrl = canvas.toDataURL();
 
-  // Find or create favicon link tags in the webpage
   let links = document.querySelectorAll("link[rel*='icon']");
   if (links.length === 0) {
     const newLink = document.createElement('link');
@@ -30,18 +30,15 @@ function changeFavicon(emoji) {
   });
 }
 
-// Listen for updates from the background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "updateState") {
     if (request.state === "RECOVER") {
-      // Flash animation for the recovery state
       let toggle = true;
       const interval = setInterval(() => {
         changeFavicon(toggle ? STATE_EMOJIS.RECOVER : STATE_EMOJIS.FRESH);
         toggle = !toggle;
-      }, 500);
+      }, 400);
 
-      // Stop the animation after 5 seconds
       setTimeout(() => {
         clearInterval(interval);
         changeFavicon(STATE_EMOJIS.FRESH);
