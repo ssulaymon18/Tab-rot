@@ -1,6 +1,5 @@
 
-Tab Rot
-Tab Rot is a Chrome extension that makes long‑ignored tabs visibly “rot” over time by changing their favicon. Tabs progress through several states (fresh → infected → decay → rotten → recover) based on how long they have been open and when you last used them.
+Tab Rot is my new project: Chrome extension that makes long‑ignored tabs visibly “rot” over time by changing their favicon. Tabs progress through several states (fresh → infected → decay → rotten → recover) based on how long they have been open and when you last used them.
 
 This helps you notice and close stale tabs instead of letting them quietly pile up.
 
