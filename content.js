@@ -1,3 +1,4 @@
+// Map states to custom emojis mirroring the 'old paper left in the sun' aesthetic
 const STATE_EMOJIS = {
   FRESH: "🌱",       // Just opened
   ONE_DAY: "📄",     // 1 Day (Fading)
@@ -30,6 +31,7 @@ function changeFavicon(emoji) {
   });
 }
 
+// Receive state update requests from background worker
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "updateState") {
     if (request.state === "RECOVER") {

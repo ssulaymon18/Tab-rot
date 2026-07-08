@@ -1,4 +1,4 @@
-// Carnival Time Thresholds (in milliseconds)
+// REAL-WORLD TIME THRESHOLDS FOR CARNIVAL SUBMISSION
 const THRESHOLDS = {
   FRESH: 0,
   ONE_DAY: 1 * 24 * 60 * 60 * 1000,     // 1 day
@@ -18,7 +18,7 @@ function updateTabTimestamp(tabId) {
   });
 }
 
-// Calculate precise decay state based on Carnival graphic
+// Calculate decay state based on Carnival specification graphic
 function getState(elapsed) {
   if (elapsed >= THRESHOLDS.ONE_MONTH) return 'MONTH_PLUS';
   if (elapsed >= THRESHOLDS.TWO_WEEKS) return 'TWO_WEEKS';
@@ -36,9 +36,9 @@ function checkTabAges() {
       const now = Date.now();
 
       tabs.forEach((tab) => {
-        if (!tab.id || !tab.url || tab.url.startsWith('chrome://')) return;
+        if (!tab.id || !tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) return;
 
-        // Active tab stays fresh
+        // Active tab stays fresh while in use
         if (tab.active) {
           if (!tabData[tab.id]) updateTabTimestamp(tab.id);
           return;
@@ -76,7 +76,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
       chrome.tabs.sendMessage(tabId, { action: "updateState", state: "RECOVER" }).catch(() => {});
 
-      // 5-second glowing restoration sequence
+      // 5-second restoration animation sequence
       setTimeout(() => {
         updateTabTimestamp(tabId);
         chrome.tabs.sendMessage(tabId, { action: "updateState", state: "FRESH" }).catch(() => {});
@@ -87,5 +87,5 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   });
 });
 
-// Checks every 5 minutes to keep browser lightweight
+// Check every 5 minutes to keep background processes extremely lightweight
 setInterval(checkTabAges, 5 * 60 * 1000);
