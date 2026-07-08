@@ -2,16 +2,22 @@
   "manifest_version": 3,
   "name": "Tab Rot",
   "version": "1.0",
-  "description": "Automatically monitors real inactive browser tabs.",
+  "description": "Makes long-ignored tabs visibly rot over time by changing their favicon.",
   "permissions": [
     "tabs",
     "storage"
   ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background.js"
   },
-  "action": {
-    "default_popup": "index.html"
-  }
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
 }
-
