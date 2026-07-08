@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Rot",
+  "version": "1.0",
+  "description": "Automatically monitors real inactive browser tabs.",
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "index.html"
+  }
+}
+
