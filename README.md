@@ -8,23 +8,23 @@ Every tab gets a timestamp when it is created or when its URL changes.
 
 The background script periodically checks all tabs and computes a state from the elapsed time:
 
-START: brand new tab.
-FRESH: recently opened.
-INFECTION: has been open for a while.
-DECAY: has been idle a long time.
-ROTTEN: very old tab.
-When the state changes, the extension sends a message to the content script in that tab.
+🌱: brand new tab.
+📄: one day.
+📜: has been stood for a while.
+🗺️: has been idle a long time.
+🪵: double more time than previous.
+🪦: very old tab.
 
 The content script replaces the page’s favicon with another icons that corresponds to the current state.
 
 When you re‑activate a tab, it briefly enters a TS_RECOVER state where the icon animates through the frames before settling back into its normal state.
 
-Default state thresholds
-Fresh: 2 minutes
-Infection: 30 minutes
-Decay: 3 hours
-Rotten: 1 day
-Recover animation: 5 seconds
+FRESH: "🌱",       // Just opened
+  ONE_DAY: "📄",     // 1 Day (Fading)
+  THREE_DAYS: "📜",  // 3 Days (Grainy/Scroll)
+  ONE_WEEK: "🗺️",    // 1 Week (Cracked / Ancient Map)
+  TWO_WEEKS: "🪵",   // 2 Weeks (Deeply decayed)
+  MONTH_PLUS: "🪦",  // 1 Month+ (Ancient history)
 Features
 Tabs visibly age the longer they stay inactive, moving through multiple states
 Each tab’s current decay stage is stored and restored across browser restarts using local storage.
