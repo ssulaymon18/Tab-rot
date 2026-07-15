@@ -33,6 +33,10 @@ How to run it locally
 Being a Chrome Webstore project-in-progress, there is no way to download it from there, which means you need to manually install it:
 
  Download or clone this folder.
+ 
  Open chrome://extensions/ in your browser.
+ 
  Turn Developer mode on in the top right corner.
+ 
  Click “Load unpacked” in the top left corner and select this folder.
+ 
