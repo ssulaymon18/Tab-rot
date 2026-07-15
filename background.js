@@ -1,91 +1,61 @@
-// REAL-WORLD TIME THRESHOLDS FOR CARNIVAL SUBMISSION
-const THRESHOLDS = {
-  FRESH: 0,
-  ONE_DAY: 1 * 24 * 60 * 60 * 1000,     // 1 day
-  THREE_DAYS: 3 * 24 * 60 * 60 * 1000,   // 3 days
-  ONE_WEEK: 7 * 24 * 60 * 60 * 1000,    // 1 week
-  TWO_WEEKS: 14 * 24 * 60 * 60 * 1000,  // 2 weeks
-  ONE_MONTH: 30 * 24 * 60 * 60 * 1000   // 1 month+
-};
+const fresh = 1000; //  1 seconf
+const day = 24 * 60 * 60 *1000;
+const threedays = 3 * day; 
+const oneweek = 7 * day;
+const twoweeks = 14 * day;
+const onemonthplus = 30 * day;
 
-// Initialize or update tab timestamp
 function updateTabTimestamp(tabId) {
-  const now = Date.now();
-  chrome.storage.local.get(['tabData'], (result) => {
-    let tabData = result.tabData || {};
-    tabData[tabId] = { lastUsed: now, state: 'FRESH' };
-    chrome.storage.local.set({ tabData });
+  chrome.storage.local.get(['tabData'], (res) => {
+    let data = res.tabData || {};
+    data[tabId] = { lastUsed: Date.now(), state: 'Fresh' };
+    chrome.storage.local.set({ tabData: data });
   });
 }
 
-// Calculate decay state based on Carnival specification graphic
 function getState(elapsed) {
-  if (elapsed >= THRESHOLDS.ONE_MONTH) return 'MONTH_PLUS';
-  if (elapsed >= THRESHOLDS.TWO_WEEKS) return 'TWO_WEEKS';
-  if (elapsed >= THRESHOLDS.ONE_WEEK) return 'ONE_WEEK';
-  if (elapsed >= THRESHOLDS.THREE_DAYS) return 'THREE_DAYS';
-  if (elapsed >= THRESHOLDS.ONE_DAY) return 'ONE_DAY';
-  return 'FRESH';
+  if (elapsed >= onemonthplus) return 'MONTH_PLUS';
+  if (elapsed >= twoweeks) return 'TWO_WEEKS';
+  if (elapsed >= oneweek) return 'ONE_WEEK';
+  if (elapsed >= threedays) return 'THREE_DAYS';
+  if (elapsed >= day) return 'ONE_DAY';
+  return 'Fresh';
 }
 
-// Periodically check tabs and update their states
 function checkTabAges() {
   chrome.tabs.query({}, (tabs) => {
-    chrome.storage.local.get(['tabData'], (result) => {
-      let tabData = result.tabData || {};
+    chrome.storage.local.get(['tabData'], (res) => {
+      let data = res.tabData || {};
       const now = Date.now();
 
-      tabs.forEach((tab) => {
-        if (!tab.id || !tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) return;
-
-        // Active tab stays fresh while in use
-        if (tab.active) {
-          if (!tabData[tab.id]) updateTabTimestamp(tab.id);
-          return;
+      for (let tab of tabs) {
+        if (!tab.id || !tab.url || tab.url.startsWith('chrome')) {
+          continue;
         }
 
-        let data = tabData[tab.id] || { lastUsed: now, state: 'FRESH' };
-        let elapsed = now - data.lastUsed;
+        if (tab.active) {
+          updateTabTimestamp(tab.id);
+          continue;
+        }
+
+        let info = data[tab.id] || { lastUsed: now, state: 'Fresh' };
+        let elapsed = now - info.lastUsed;
         let newState = getState(elapsed);
 
-        if (data.state !== newState && data.state !== 'RECOVER') {
-          data.state = newState;
-          tabData[tab.id] = data;
-          
-          chrome.tabs.sendMessage(tab.id, { action: "updateState", state: newState }).catch(() => {});
+        if (info.state !== newState) {
+          info.state = newState;
+          data[tab.id] = info;
+          chrome.tabs.sendMessage(tab.id, { action: 'updateState', state: newState });
         }
-      });
-      chrome.storage.local.set({ tabData });
+      }
+
+      chrome.storage.local.set({ tabData: data });
     });
   });
 }
 
-// Listeners
-chrome.tabs.onCreated.addListener((tab) => updateTabTimestamp(tab.id));
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') updateTabTimestamp(tabId);
+chrome.tabs.onActivated.addListener((info) => {
+  updateTabTimestamp(info.tabId);
 });
 
-chrome.tabs.onActivated.addListener((activeInfo) => {
-  const tabId = activeInfo.tabId;
-  chrome.storage.local.get(['tabData'], (result) => {
-    let tabData = result.tabData || {};
-    if (tabData[tabId] && tabData[tabId].state !== 'FRESH') {
-      tabData[tabId].state = 'RECOVER';
-      chrome.storage.local.set({ tabData });
-
-      chrome.tabs.sendMessage(tabId, { action: "updateState", state: "RECOVER" }).catch(() => {});
-
-      // 5-second restoration animation sequence
-      setTimeout(() => {
-        updateTabTimestamp(tabId);
-        chrome.tabs.sendMessage(tabId, { action: "updateState", state: "FRESH" }).catch(() => {});
-      }, 5000);
-    } else {
-      updateTabTimestamp(tabId);
-    }
-  });
-});
-
-// Check every 5 minutes to keep background processes extremely lightweight
-setInterval(checkTabAges, 5 * 60 * 1000);
+setInterval(checkTabAges, 15 * 60 * 1000);

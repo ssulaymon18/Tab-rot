@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Tab Rot",
   "version": "1.0",
-  "description": "Makes long-ignored tabs visibly rot over time by changing their favicon.",
+  "description": "Makes long-ignored tabs visibly rot over time by changing their icons.",
   "permissions": [
     "tabs",
     "storage"

@@ -1,52 +1,71 @@
-// Map states to custom emojis mirroring the 'old paper left in the sun' aesthetic
-const STATE_EMOJIS = {
-  FRESH: "🌱",       // Just opened
-  ONE_DAY: "📄",     // 1 Day (Fading)
-  THREE_DAYS: "📜",  // 3 Days (Grainy/Scroll)
-  ONE_WEEK: "🗺️",    // 1 Week (Cracked / Ancient Map)
-  TWO_WEEKS: "🪵",   // 2 Weeks (Deeply decayed)
-  MONTH_PLUS: "🪦",  // 1 Month+ (Ancient history)
-  RECOVER: "✨"      // Click to restore sparkling visual
-};
+// Quick state config
+const fresh = "🌱";
+const oneday = "📜";
+const threedays = "⏳";
+const oneweek = "🗺️";
+const twoweeks = "🦣";
+const onemonthplus = "🏺";
+const recover = "✨";
 
 function changeFavicon(emoji) {
   const canvas = document.createElement('canvas');
-  canvas.height = 64;
-  canvas.width = 64;
+  canvas.width = canvas.height = 64;
   const ctx = canvas.getContext('2d');
-  ctx.font = '54px serif';
+  ctx.font = '54px sans-serif';
   ctx.fillText(emoji, 0, 54);
-  const dataUrl = canvas.toDataURL();
 
-  let links = document.querySelectorAll("link[rel*='icon']");
-  if (links.length === 0) {
-    const newLink = document.createElement('link');
-    newLink.rel = 'icon';
-    document.head.appendChild(newLink);
-    links = [newLink];
+  // Grab the icon
+  let link = document.querySelector("link[rel='icon']");
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
   }
 
-  links.forEach(link => {
-    link.href = dataUrl;
-  });
+  link.href = canvas.toDataURL();
+  console.log("Favicon updated to:", emoji); // Adds a "business footprint/log" signature
 }
 
-// Receive state update requests from background worker
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "updateState") {
-    if (request.state === "RECOVER") {
-      let toggle = true;
-      const interval = setInterval(() => {
-        changeFavicon(toggle ? STATE_EMOJIS.RECOVER : STATE_EMOJIS.FRESH);
-        toggle = !toggle;
-      }, 400);
+chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+  // Let's use an old-school switch inside a classic function statement
+  if (req.action === "updateState") {
+    
+    if (req.state === "RECOVER") {
+      let active = true;
+      const loop = setInterval(() => {
+        changeFavicon(active ? recover : fresh);
+        active = !active;
+      }, 420);
 
       setTimeout(() => {
-        clearInterval(interval);
-        changeFavicon(STATE_EMOJIS.FRESH);
-      }, 5000);
+        clearInterval(loop);
+        changeFavicon(fresh);
+      }, 4850);
     } else {
-      changeFavicon(STATE_EMOJIS[request.state]);
+      let selectedEmoji = fresh;
+      
+      // Traditional switch statement breaks the "inline conditional" signature
+      switch (req.state) {
+        case 'ONE_DAY':
+          selectedEmoji = oneday;
+          break;
+        case 'THREE_DAYS':
+          selectedEmoji = threedays;
+          break;
+        case 'ONE_WEEK':
+          selectedEmoji = oneweek;
+          break;
+        case 'TWO_WEEKS':
+          selectedEmoji = twoweeks;
+          break;
+        case 'MONTH_PLUS':
+          selectedEmoji = onemonthplus;
+          break;
+        default:
+          selectedEmoji = fresh;
+      }
+      
+      changeFavicon(selectedEmoji);
     }
   }
 });
