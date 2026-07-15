@@ -1,40 +1,32 @@
+Tab Rot 🪦🌱
 
-Tab Rot is my new project: Chrome extension that makes long‑ignored tabs visibly “rot” over time by changing their favicon. Tabs progress through several states (fresh → infected → decay → rotten → recover) based on how long they have been open and when you last used them.
 
-This helps you notice and close stale tabs instead of letting them quietly pile up.
+The Chrome extension I created as my brain’s response to my browser becoming a grave-yard with 90+ tabs open but untouched for weeks.
+
+
+Rather than just removing these tabs, Tab Rot adds a sense of rot to these unused tabs by updating their icons to reflect their level of decay.
+
 
 How it works
-Every tab gets a timestamp when it is created or when its URL changes.
 
-The background script periodically checks all tabs and computes a state from the elapsed time:
+Each time a tab is opened or its url updated, the tab gets a time stamp. A background script calculates the age of a tab and updates its favicon to match the stage of its decay:
 
-🌱: brand new tab.
-📄: one day.
-📜: has been stood for a while.
-🗺️: has been idle a long time.
-🪵: double more time than previous.
-🪦: very old tab.
 
-The content script replaces the page’s favicon with another icons that corresponds to the current state.
+🌱 Fresh: recently opened tab
+📄 1 Day: beginning to decay
+📜 3 Days: starting to get some dust
+🗺️ 1 Week: ancient map status
+🪵 2 Weeks: rotting wood
+🪦 1 Month+: deceased, tombstone
 
-When you re‑activate a tab, it briefly enters a TS_RECOVER state where the icon animates through the frames before settling back into its normal state.
+What’s best about this: when you click an extremely old tab back into activity, it briefly animates (✨ → 🌱) to become fresh again.
 
-FRESH: "🌱",       // Just opened
-  ONE_DAY: "📄",     // 1 Day (Fading)
-  THREE_DAYS: "📜",  // 3 Days (Grainy/Scroll)
-  ONE_WEEK: "🗺️",    // 1 Week (Cracked / Ancient Map)
-  TWO_WEEKS: "🪵",   // 2 Weeks (Deeply decayed)
-  MONTH_PLUS: "🪦",  // 1 Month+ (Ancient history)
-Features
-Tabs visibly age the longer they stay inactive, moving through multiple states
-Each tab’s current decay stage is stored and restored across browser restarts using local storage.
-When you revisit an aged tab, a restoration animation plays to make the recovery easy to notice.
-Users can customize when decay begins with a configurable inactivity threshold (for example: after 1 hour, 1 day, or 1 week).
-The extension does not alter how pages load, run scripts, or behave.
-Getting it running
-Tab Rot is not published in a web store yet, so you need to load it manually:
 
-Open chrome://extensions (or brave://extensions in Brave).
-Enable Developer mode.
-Click Load unpacked and select the Tab-Vibe folder.
-Any Chromium-based browser (Chrome, Brave, Edge, etc.) will load the extension using this method.
+How to run it locally
+
+Being a Chrome Webstore project-in-progress, there is no way to download it from there, which means you need to manually install it:
+
+Download or clone this folder.
+Open chrome://extensions/ in your browser.
+Turn Developer mode on in the top right corner.
+Click “Load unpacked” in the top left corner and select this folder.
