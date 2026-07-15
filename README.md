@@ -13,11 +13,17 @@ Each time a tab is opened or its url updated, the tab gets a time stamp. A backg
 
 
 🌱 Fresh: recently opened tab
+
 📄 1 Day: beginning to decay
+
 📜 3 Days: starting to get some dust
+
 🗺️ 1 Week: ancient map status
+
 🪵 2 Weeks: rotting wood
+
 🪦 1 Month+: deceased, tombstone
+
 
 What’s best about this: when you click an extremely old tab back into activity, it briefly animates (✨ → 🌱) to become fresh again.
 
