@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Rot 🪦🌱</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+        h1 {
+            color: #ff5555;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #aaa;
+        }
+        .stages {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            font-size: 2rem;
+        }
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stage span {
+            font-size: 1rem;
+            color: #777;
+            margin-top: 5px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #00bcd4;
+            color: #121212;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: opacity 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tab Rot 🪦🌱</h1>
+        <p>A Chrome extension built to stop tab-hoarding. When tabs are left unused, they slowly "rot" through different stages over time.</p>
+        
+        <div class="stages">
+            <div class="stage">🌱<span>Fresh</span></div>
+            <div class="stage">📜<span>Dusty</span></div>
+            <div class="stage">🪵<span>Rotting</span></div>
+            <div class="stage">🪦<span>Dead</span></div>
+        </div>
+
+        <p>Load it manually on <code>chrome://extensions/</code> in Developer Mode!</p>
+        <a href="https://github.com/ssulaymon18/Tab-rot" class="btn" target="_blank">View GitHub Repository</a>
+    </div>
+</body>
+</html>
