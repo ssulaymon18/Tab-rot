@@ -1,10 +1,9 @@
-// Quick state config
 const fresh = "🌱";
-const oneday = "📜";
-const threedays = "⏳";
-const oneweek = "🗺️";
-const twoweeks = "🦣";
-const onemonthplus = "🏺";
+const oneDay = "📜";
+const threeDays = "⏳";
+const oneWeek = "🗺️";
+const twoWeeks = "🦣";
+const oneMonth = "🏺";
 const recover = "✨";
 
 function changeFavicon(emoji) {
@@ -14,7 +13,6 @@ function changeFavicon(emoji) {
   ctx.font = '54px sans-serif';
   ctx.fillText(emoji, 0, 54);
 
-  // Grab the icon
   let link = document.querySelector("link[rel='icon']");
   if (!link) {
     link = document.createElement('link');
@@ -23,14 +21,13 @@ function changeFavicon(emoji) {
   }
 
   link.href = canvas.toDataURL();
-  console.log("Favicon updated to:", emoji); // Adds a "business footprint/log" signature
+  console.log("Favicon updated to:", emoji); 
 }
 
 chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
-  // Let's use an old-school switch inside a classic function statement
   if (req.action === "updateState") {
     
-    if (req.state === "RECOVER") {
+    if (req.state === "recover") {
       let active = true;
       const loop = setInterval(() => {
         changeFavicon(active ? recover : fresh);
@@ -44,22 +41,21 @@ chrome.runtime.onMessage.addListener(function(req, sender, sendResponse) {
     } else {
       let selectedEmoji = fresh;
       
-      // Traditional switch statement breaks the "inline conditional" signature
       switch (req.state) {
-        case 'ONE_DAY':
-          selectedEmoji = oneday;
+        case 'oneDay':
+          selectedEmoji = oneDay;
           break;
-        case 'THREE_DAYS':
-          selectedEmoji = threedays;
+        case 'threeDays':
+          selectedEmoji = threeDays;
           break;
-        case 'ONE_WEEK':
-          selectedEmoji = oneweek;
+        case 'oneWeek':
+          selectedEmoji = oneWeek;
           break;
-        case 'TWO_WEEKS':
-          selectedEmoji = twoweeks;
+        case 'twoWeeks':
+          selectedEmoji = twoWeeks;
           break;
-        case 'MONTH_PLUS':
-          selectedEmoji = onemonthplus;
+        case 'oneMonth':
+          selectedEmoji = oneMonth;
           break;
         default:
           selectedEmoji = fresh;

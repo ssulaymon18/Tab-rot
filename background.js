@@ -1,9 +1,9 @@
-const fresh = 1000; //  1 seconf
-const day = 24 * 60 * 60 *1000;
-const threedays = 3 * day; 
-const oneweek = 7 * day;
-const twoweeks = 14 * day;
-const onemonthplus = 30 * day;
+const fresh = 1000;
+const oneDay = 24 * 60 * 60 * 1000;
+const threeDays = 3 * oneDay;
+const oneWeek = 7 * oneDay;
+const twoWeeks = 14 * oneDay;
+const oneMonth = 30 * oneDay;
 
 function updateTabTimestamp(tabId) {
   chrome.storage.local.get(['tabData'], (res) => {
@@ -13,14 +13,17 @@ function updateTabTimestamp(tabId) {
   });
 }
 
-function getState(elapsed) {
-  if (elapsed >= onemonthplus) return 'MONTH_PLUS';
-  if (elapsed >= twoweeks) return 'TWO_WEEKS';
-  if (elapsed >= oneweek) return 'ONE_WEEK';
-  if (elapsed >= threedays) return 'THREE_DAYS';
-  if (elapsed >= day) return 'ONE_DAY';
-  return 'Fresh';
+function getTimeState(elapsedTime) {
+  switch (true) {
+    case elapsedTime >= oneMonth:  return 'oneMonth';
+    case elapsedTime >= twoWeeks:   return 'twoWeeks';
+    case elapsedTime >= oneWeek:    return 'oneWeek';
+    case elapsedTime >= threeDays:  return 'threeDays';
+    case elapsedTime >= oneDay:     return 'oneDay';
+    default:                        return 'fresh';
+  }
 }
+
 
 function checkTabAges() {
   chrome.tabs.query({}, (tabs) => {
@@ -38,9 +41,9 @@ function checkTabAges() {
           continue;
         }
 
-        let info = data[tab.id] || { lastUsed: now, state: 'Fresh' };
+        let info = data[tab.id] || { lastUsed: now, state: 'fresh' };
         let elapsed = now - info.lastUsed;
-        let newState = getState(elapsed);
+        let newState = getTimeState(elapsed);
 
         if (info.state !== newState) {
           info.state = newState;
